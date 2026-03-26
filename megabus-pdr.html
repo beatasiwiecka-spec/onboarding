@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+    padding: 40px 30px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #162847, #1e3a5f);
+    border-radius: 16px;
+    padding: 32px 36px;
+    color: #fff;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: #f0629215;
+    border-radius: 50%;
+  }
+  .header .tag {
+    display: inline-block;
+    background: #f06292;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+  .header h1 span { color: #f48fb1; }
+  .header .sub { font-size: 0.88rem; color: #90b8d8; margin-top: 8px; }
+  .meta-row {
+    display: flex; gap: 24px; margin-top: 20px; flex-wrap: wrap;
+  }
+  .meta-item { font-size: 0.78rem; color: #b0cce0; }
+  .meta-item strong { color: #fff; display: block; font-size: 0.85rem; }
+
+  /* Summary KPIs */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+  .kpi {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 16px;
+    border-left: 4px solid #162847;
+    box-shadow: 0 2px 10px #00000010;
+  }
+  .kpi.pink { border-left-color: #f06292; }
+  .kpi.teal { border-left-color: #26a69a; }
+  .kpi.amber { border-left-color: #ffa726; }
+  .kpi .val { font-size: 1.4rem; font-weight: 800; color: #162847; }
+  .kpi.pink .val { color: #f06292; }
+  .kpi.teal .val { color: #26a69a; }
+  .kpi.amber .val { color: #e65100; }
+  .kpi .lbl { font-size: 0.7rem; color: #888; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Section */
+  .section {
+    background: #fff;
+    border-radius: 14px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px #00000008;
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #162847, #1e3a5f);
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-header .icon {
+    width: 36px; height: 36px;
+    background: #f0629222;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .section-header h2 { font-size: 1rem; font-weight: 700; flex: 1; }
+  .section-header .toggle { font-size: 1rem; transition: transform 0.3s; }
+  .section-header.open .toggle { transform: rotate(180deg); }
+  .section-body { padding: 24px; display: none; }
+  .section-body.open { display: block; }
+
+  /* Insight box */
+  .insight {
+    background: #f0f4f8;
+    border-left: 3px solid #162847;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    font-size: 0.82rem;
+    color: #334;
+    line-height: 1.6;
+  }
+  .insight.pink { border-left-color: #f06292; background: #fff0f4; }
+  .insight.teal { border-left-color: #26a69a; background: #f0faf9; }
+  .insight.amber { border-left-color: #ffa726; background: #fffaf0; }
+
+  /* Recommendation cards */
+  .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .rec {
+    border: 1.5px solid #e8ecf0;
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+  }
+  .rec .rec-num {
+    position: absolute; top: -10px; left: 14px;
+    background: #162847; color: #fff;
+    font-size: 0.68rem; font-weight: 700;
+    padding: 2px 10px; border-radius: 10px;
+  }
+  .rec.pink .rec-num { background: #f06292; }
+  .rec.teal .rec-num { background: #26a69a; }
+  .rec.amber .rec-num { background: #ffa726; color: #fff; }
+  .rec h4 { font-size: 0.85rem; font-weight: 700; color: #162847; margin-top: 6px; margin-bottom: 6px; }
+  .rec p { font-size: 0.78rem; color: #555; line-height: 1.55; }
+  .rec .impact {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #e8f5e9; color: #2e7d32;
+  }
+  .rec .impact.med { background: #fff8e1; color: #e65100; }
+  .rec .impact.high { background: #fce4ec; color: #c2185b; }
+
+  /* Data table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 14px; }
+  th { background: #162847; color: #fff; padding: 8px 12px; text-align: left; }
+  td { padding: 8px 12px; border-bottom: 1px solid #eee; color: #333; }
+  tr:nth-child(even) td { background: #f9fafb; }
+  tr:hover td { background: #f0f4f8; }
+
+  /* Timing bar */
+  .timing { margin-top: 16px; }
+  .t-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .t-label { font-size: 0.75rem; width: 160px; flex-shrink: 0; color: #444; }
+  .t-bar-wrap { flex: 1; background: #eee; border-radius: 4px; height: 10px; }
+  .t-bar { height: 10px; border-radius: 4px; background: linear-gradient(90deg, #162847, #f06292); }
+  .t-val { font-size: 0.72rem; color: #888; width: 50px; text-align: right; }
+
+  .section-intro { font-size: 0.82rem; color: #555; line-height: 1.65; margin-bottom: 14px; }
+
+  .divider { height: 1px; background: #eee; margin: 16px 0; }
+
+  .priority-badge {
+    display: inline-block; font-size: 0.68rem; font-weight: 700;
+    padding: 2px 9px; border-radius: 10px; margin-left: 8px;
+  }
+  .p-high { background: #fce4ec; color: #c2185b; }
+  .p-med { background: #fff8e1; color: #e65100; }
+  .p-low { background: #e8f5e9; color: #2e7d32; }
+
+  /* footer */
+  .footer {
+    text-align: center; margin-top: 32px;
+    font-size: 0.72rem; color: #aaa;
+    padding-top: 20px; border-top: 1px solid #eee;
+  }
+  .footer strong { color: #162847; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="tag">Program Design Recommendation</div>
+  <h1>Megabus <span>Canada</span> — Loyalty PDR</h1>
+  <p class="sub">Based on transaction data analysis across 228,588 members · Oct 2024 – Nov 2025</p>
+  <div class="meta-row">
+    <div class="meta-item"><strong>Prepared by</strong>TrueLoyal Team</div>
+    <div class="meta-item"><strong>Client</strong>Megabus Canada</div>
+    <div class="meta-item"><strong>CSM</strong>Marcus Benavidez</div>
+    <div class="meta-item"><strong>Audience</strong>Joint Megabus + TrueLoyal</div>
+    <div class="meta-item"><strong>Date</strong>March 2026</div>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+  <div class="kpi"><div class="val">$29.6M</div><div class="lbl">Total Revenue</div></div>
+  <div class="kpi pink"><div class="val">60.91%</div><div class="lbl">One-Time Buyers</div></div>
+  <div class="kpi teal"><div class="val">39%</div><div class="lbl">Retention Rate</div></div>
+  <div class="kpi amber"><div class="val">49 days</div><div class="lbl">Avg. Purchase Cycle</div></div>
+</div>
+
+<!-- SECTION 1: TIERS -->
+<div class="section">
+  <div class="section-header open" onclick="toggle(this)">
+    <div class="icon">🏆</div>
+    <h2>1. Loyalty Program Tiers — Platinum / Gold / Silver</h2>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body open">
+    <p class="section-intro">The current data-derived tier segmentation reveals strong concentration at the Silver level and high-value behavior among Platinum members. Tier design should reflect actual spend thresholds and incentivize upward mobility.</p>
+
+    <table>
+      <tr><th>Tier</th><th>Customers</th><th>Cust %</th><th>Revenue</th><th>Rev %</th><th>AOV</th><th>Rev/Member</th><th>Freq</th></tr>
+      <tr><td>🥇 Platinum</td><td>13,758</td><td>6.02%</td><td>$8.2M</td><td>27.79%</td><td>$67.78</td><td>$597.65</td><td>8.82</td></tr>
+      <tr><td>🥈 Gold</td><td>44,054</td><td>19.27%</td><td>$10.1M</td><td>34.03%</td><td>$72.00</td><td>$228.54</td><td>3.17</td></tr>
+      <tr><td>🥉 Silver</td><td>170,776</td><td>74.71%</td><td>$11.3M</td><td>38.17%</td><td>$46.48</td><td>$66.12</td><td>1.42</td></tr>
+    </table>
+
+    <div class="divider"></div>
+
+    <div class="insight pink">⚡ Top 6% of members (Platinum) drive <strong>27.79% of revenue</strong> with RPM 4x the average ($597 vs $129). <strong>89.65%</strong> of Platinum members are repeat buyers — this tier has the highest loyalty signal.</div>
+    <div class="insight">📊 Gold tier cutoff sits at P75 ($154.98 spend) and Platinum at P94 ($364.95). These thresholds should anchor tier entry points in the program design.</div>
+    <div class="insight teal">🔁 Silver tier holds 74.71% of members but only 38.17% of revenue — the biggest opportunity for upward migration through targeted nudges.</div>
+
+    <div class="rec-grid">
+      <div class="rec pink">
+        <div class="rec-num pink">REC 1</div>
+        <h4>Anchor Tiers to Data-Derived Spend Thresholds</h4>
+        <p>Set Silver entry at $0, Gold at $155 (P75), Platinum at $365 (P94) cumulative spend. Communicate progress bars clearly to drive aspiration.</p>
+        <span class="impact high">Impact: High</span>
+      </div>
+      <div class="rec">
+        <div class="rec-num">REC 2</div>
+        <h4>Platinum Exclusive Perks — Protect & Reward</h4>
+        <p>Early boarding, dedicated support line, bonus points on Coach Canada routes. Focus on the 89.65% repeat Platinum buyers — they are the most loyal base.</p>
+        <span class="impact">Impact: High</span>
+      </div>
+      <div class="rec teal">
+        <div class="rec-num teal">REC 3</div>
+        <h4>Gold → Platinum Upgrade Campaign</h4>
+        <p>Gold members (44K) are close to Platinum. A "spend $X more to unlock Platinum" dynamic progress nudge at checkout can accelerate upgrades.</p>
+        <span class="impact med">Impact: Medium–High</span>
+      </div>
+      <div class="rec amber">
+        <div class="rec-num amber">REC 4</div>
+        <h4>Silver Activation — First Points Boost</h4>
+        <p>Offer 2x points on the 2nd purchase for Silver members to build momentum. Tie to the $20–$30 spend cohort (48.27% conversion rate — highest in base).</p>
+        <span class="impact med">Impact: Medium</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: RETENTION -->
+<div class="section">
+  <div class="section-header" onclick="toggle(this)">
+    <div class="icon">🔁</div>
+    <h2>2. Retention & Reducing Drop-Off</h2>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="section-intro">The single biggest revenue risk for Megabus Canada is the 61% drop-off after the 1st purchase. Retention improves significantly after the 2nd purchase, making the 1st→2nd conversion the highest-priority intervention point.</p>
+
+    <div class="insight pink">🚨 <strong>61% of members never return after their 1st purchase.</strong> Only 89,356 out of 228,588 make a 2nd purchase — this is the #1 retention gap to close.</div>
+    <div class="insight">📉 AOV drops 17.63% from 1st to 2nd purchase. Despite this, repeat buyers contribute 63.7% of revenue — proving that frequency outweighs order size.</div>
+    <div class="insight teal">✅ Once members reach their 3rd+ purchase, retention improves and average days between purchases begins to decrease — indicating building brand affinity.</div>
+    <div class="insight amber">💡 27.27% of repeaters make same-day multi-orders — this segment shows strong intent and brand preference. Deserves dedicated recognition and perks.</div>
+
+    <div class="rec-grid">
+      <div class="rec pink">
+        <div class="rec-num pink">REC 5</div>
+        <h4>1st → 2nd Purchase Win-Back Journey</h4>
+        <p>Trigger an automated re-engagement sequence at day 30, 49, and 80 post 1st purchase (matching P50, avg, P80 cycle). Offer a time-limited bonus points incentive.</p>
+        <span class="impact high">Impact: High</span>
+      </div>
+      <div class="rec">
+        <div class="rec-num">REC 6</div>
+        <h4>Post-Purchase Welcome Program</h4>
+        <p>Immediately after 1st purchase, enroll members in a loyalty welcome series — show tier progress, highlight benefits, and provide a "next trip" discount code.</p>
+        <span class="impact high">Impact: High</span>
+      </div>
+      <div class="rec teal">
+        <div class="rec-num teal">REC 7</div>
+        <h4>Same-Day Multi-Order Segment — VIP Fast Track</h4>
+        <p>Identify the 24,365 same-day multi-order members. These planned travelers show high affinity — offer bundle perks, priority status, or fast-track tier upgrades.</p>
+        <span class="impact med">Impact: Medium–High</span>
+      </div>
+      <div class="rec amber">
+        <div class="rec-num amber">REC 8</div>
+        <h4>AOV Protection — Minimum Spend Bonus</h4>
+        <p>Counter the 17.63% AOV drop on 2nd purchase by offering bonus points for orders above the 1st purchase amount. Reward members who maintain or grow spend.</p>
+        <span class="impact med">Impact: Medium</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: CHANNELS -->
+<div class="section">
+  <div class="section-header" onclick="toggle(this)">
+    <div class="icon">📡</div>
+    <h2>3. Channel Optimization</h2>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="section-intro">Three primary channels serve Megabus Canada members. mega_web_ca dominates but affiliate and agency channels show untapped potential for loyalty activation.</p>
+
+    <table>
+      <tr><th>Channel</th><th>Members</th><th>Member %</th><th>Revenue</th><th>Rev %</th><th>AOV</th><th>Rev/Member</th><th>Freq</th></tr>
+      <tr><td>mega_web_ca</td><td>183,847</td><td>80.43%</td><td>$23.8M</td><td>80.48%</td><td>$57.54</td><td>$129.50</td><td>2.25</td></tr>
+      <tr><td>mega_affiliate_ca</td><td>42,149</td><td>18.44%</td><td>$4.3M</td><td>14.66%</td><td>$60.09</td><td>$102.90</td><td>1.71</td></tr>
+      <tr><td>mega_agency_ca</td><td>8,689</td><td>3.80%</td><td>$1.0M</td><td>3.51%</td><td>$99.08</td><td>$119.47</td><td>1.21</td></tr>
+    </table>
+
+    <div class="divider"></div>
+
+    <div class="insight">🌐 <strong>mega_web_ca</strong> is the primary loyalty engine — 80.43% of members, highest RPM and frequency. Loyalty features should be deeply integrated into the web experience.</div>
+    <div class="insight pink">🤝 <strong>mega_affiliate_ca</strong> holds 18.44% of members but only 14.66% of revenue — lower RPM and frequency vs. web. A loyalty bridge for affiliate users could significantly close this gap.</div>
+    <div class="insight amber">🏢 <strong>mega_agency_ca</strong> has the highest AOV ($99.08) but lowest frequency (1.21). These are likely corporate/group travelers — a B2B loyalty tier could unlock recurring bookings.</div>
+
+    <div class="rec-grid">
+      <div class="rec">
+        <div class="rec-num">REC 9</div>
+        <h4>Web-First Loyalty Experience</h4>
+        <p>Embed real-time points balance, tier progress bar, and personalized offers directly in the mega_web_ca booking flow — pre, during, and post transaction.</p>
+        <span class="impact high">Impact: High</span>
+      </div>
+      <div class="rec pink">
+        <div class="rec-num pink">REC 10</div>
+        <h4>Affiliate → Direct Channel Migration</h4>
+        <p>Offer affiliate members a one-time bonus for completing their next booking directly via web. This increases RPM, frequency, and loyalty program visibility.</p>
+        <span class="impact med">Impact: Medium–High</span>
+      </div>
+      <div class="rec teal">
+        <div class="rec-num teal">REC 11</div>
+        <h4>Agency / Corporate Loyalty Sub-Program</h4>
+        <p>Create a group/corporate tier for mega_agency_ca users. High AOV ($99) suggests business travel — recurring perks, invoice billing, and volume rewards could drive frequency from 1.21 to 2+.</p>
+        <span class="impact med">Impact: Medium</span>
+      </div>
+      <div class="rec amber">
+        <div class="rec-num amber">REC 12</div>
+        <h4>Cross-Channel Points Unification</h4>
+        <p>Ensure points earned via affiliate and agency channels are fully visible and redeemable on web. Unified balance view drives web login and increases direct engagement.</p>
+        <span class="impact med">Impact: Medium</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: PURCHASE CYCLE -->
+<div class="section">
+  <div class="section-header" onclick="toggle(this)">
+    <div class="icon">⏱️</div>
+    <h2>4. Purchase Cycle & Re-Engagement Timing</h2>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body">
+    <p class="section-intro">Understanding when members are most likely to return is critical for well-timed loyalty communications. The data provides clear percentile-based windows for each purchase step.</p>
+
+    <div class="insight">📅 Average purchase gap is <strong>49 days (1.6 months)</strong>. 80% of returners come back within 80 days. This defines the optimal re-engagement window.</div>
+    <div class="insight pink">📈 Purchase gaps <strong>decrease with each subsequent order</strong> — from 48 days (1→2) down to 24 days (9→10) — confirming that loyalty and habit build over time.</div>
+    <div class="insight teal">🚍 <strong>Coach Canada</strong> repeaters cycle every 46 days avg; <strong>Badder Bus</strong> repeaters every 56 days. Carrier-specific timing can power personalized re-engagement.</div>
+
+    <p style="font-size:0.8rem;font-weight:700;color:#162847;margin:16px 0 8px;">Re-Engagement Communication Windows (1st → 2nd Purchase)</p>
+    <div class="timing">
+      <div class="t-row"><div class="t-label">Early nudge (P50)</div><div class="t-bar-wrap"><div class="t-bar" style="width:19%"></div></div><div class="t-val">15 days</div></div>
+      <div class="t-row"><div class="t-label">Primary window (Avg)</div><div class="t-bar-wrap"><div class="t-bar" style="width:38%"></div></div><div class="t-val">48 days</div></div>
+      <div class="t-row"><div class="t-label">80% of members</div><div class="t-bar-wrap"><div class="t-bar" style="width:65%"></div></div><div class="t-val">83 days</div></div>
+      <div class="t-row"><div class="t-label">90% of members</div><div class="t-bar-wrap"><div class="t-bar" style="width:100%"></div></div><div class="t-val">152 days</div></div>
+    </div>
+
+    <div class="rec-grid">
+      <div class="rec pink">
+        <div class="rec-num pink">REC 13</div>
+        <h4>3-Touch Re-Engagement Cadence</h4>
+        <p>Day 15: "We miss you" soft nudge + points reminder. Day 48: Time-limited offer (2x points or discount). Day 83: Final "don't lose your status" urgency message.</p>
+        <span class="impact high">Impact: High</span>
+      </div>
+      <div class="rec">
+        <div class="rec-num">REC 14</div>
+        <h4>Carrier-Specific Timing Triggers</h4>
+        <p>Personalize re-engagement timing based on the member's preferred carrier. Coach Canada members: trigger at 46 days. Badder Bus members: trigger at 56 days.</p>
+        <span class="impact med">Impact: Medium–High</span>
+      </div>
+      <div class="rec teal">
+        <div class="rec-num teal">REC 15</div>
+        <h4>Seasonal Demand Amplification</h4>
+        <p>July and August are peak months (10.3–10.8% revenue share). Launch "Summer Loyalty Boost" campaigns 3–4 weeks prior to capitalize on high-intent travel periods.</p>
+        <span class="impact med">Impact: Medium</span>
+      </div>
+      <div class="rec amber">
+        <div class="rec-num amber">REC 16</div>
+        <h4>Thu–Fri High-Intent Targeting</h4>
+        <p>Thursday (14.93%) and Friday (14.81%) are peak booking days. Schedule loyalty communications (points expiry, offers, tier updates) on Wed–Thu for maximum open rates.</p>
+        <span class="impact med">Impact: Medium</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIORITY SUMMARY -->
+<div class="section">
+  <div class="section-header" onclick="toggle(this)">
+    <div class="icon">📋</div>
+    <h2>5. Prioritized Recommendation Summary</h2>
+    <span class="toggle">▼</span>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr><th>#</th><th>Recommendation</th><th>Area</th><th>Priority</th></tr>
+      <tr><td>REC 5</td><td>1st → 2nd Purchase Win-Back Journey</td><td>Retention</td><td><span class="priority-badge p-high">🔴 High</span></td></tr>
+      <tr><td>REC 6</td><td>Post-Purchase Welcome Program</td><td>Retention</td><td><span class="priority-badge p-high">🔴 High</span></td></tr>
+      <tr><td>REC 1</td><td>Anchor Tiers to Data-Derived Thresholds</td><td>Tiers</td><td><span class="priority-badge p-high">🔴 High</span></td></tr>
+      <tr><td>REC 13</td><td>3-Touch Re-Engagement Cadence</td><td>Purchase Cycle</td><td><span class="priority-badge p-high">🔴 High</span></td></tr>
+      <tr><td>REC 9</td><td>Web-First Loyalty Experience</td><td>Channels</td><td><span class="priority-badge p-high">🔴 High</span></td></tr>
+      <tr><td>REC 2</td><td>Platinum Exclusive Perks</td><td>Tiers</td><td><span class="priority-badge p-high">🔴 High</span></td></tr>
+      <tr><td>REC 3</td><td>Gold → Platinum Upgrade Campaign</td><td>Tiers</td><td><span class="priority-badge p-med">🟡 Medium</span></td></tr>
+      <tr><td>REC 7</td><td>Same-Day Multi-Order VIP Fast Track</td><td>Retention</td><td><span class="priority-badge p-med">🟡 Medium</span></td></tr>
+      <tr><td>REC 10</td><td>Affiliate → Direct Channel Migration</td><td>Channels</td><td><span class="priority-badge p-med">🟡 Medium</span></td></tr>
+      <tr><td>REC 14</td><td>Carrier-Specific Timing Triggers</td><td>Purchase Cycle</td><td><span class="priority-badge p-med">🟡 Medium</span></td></tr>
+      <tr><td>REC 15</td><td>Seasonal Demand Amplification</td><td>Purchase Cycle</td><td><span class="priority-badge p-med">🟡 Medium</span></td></tr>
+      <tr><td>REC 11</td><td>Agency / Corporate Sub-Program</td><td>Channels</td><td><span class="priority-badge p-low">🟢 Low</span></td></tr>
+      <tr><td>REC 16</td><td>Thu–Fri High-Intent Targeting</td><td>Purchase Cycle</td><td><span class="priority-badge p-low">🟢 Low</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  Prepared by <strong>TrueLoyal</strong> for <strong>Megabus Canada</strong> · March 2026 · CSM: Marcus Benavidez · Confidential
+</div>
+
+<script>
+  function toggle(header) {
+    header.classList.toggle('open');
+    const body = header.nextElementSibling;
+    body.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
